@@ -23,38 +23,41 @@ def calculate_tax(amount, tax_rate):
     return amount * tax_rate
 
 def generate_receipt(items, tax_rate):
-    total = calculate_subtotal(items)
-    discount = calculate_discount(total)
-    discounted_total = total-discount
-    tax = calculate_tax(discounted_total,tax_rate)
-    final_amount = discounted_total+tax
-    print("======= SHOPPING RECEIPT =======")
+    try:
+        total = calculate_subtotal(items)
+        discount = calculate_discount(total)
+        discounted_total = total - discount
+        tax = calculate_tax(discounted_total, tax_rate)
+        final_amount = discounted_total + tax
+        
+        # Formatted UI output
+        print("\n======= SHOPPING RECEIPT =======")
+        for item in items:
+            item_total = item["price"] * item["quantity"]
+            print(f'{item["name"]:<12} x {item["quantity"]:<3} {item_total:>12.2f} Birr')
 
-    for item in items:
-        print(
-            f'{item["name"]} x {item["quantity"]}: '
-            f'{item["price"] * item["quantity"]:.2f} Birr'
-        )
+        print("--------------------------------")
+        print(f"Subtotal:         {total:>12.2f} Birr")
+        print(f"Discount:        -{discount:>12.2f} Birr")
+        print(f"After discount:   {discounted_total:>12.2f} Birr")
+        print(f"Tax ({tax_rate*100:.0f}%):       +{tax:>12.2f} Birr")
+        print("--------------------------------")
+        print(f"Final amount:     {final_amount:>12.2f} Birr")
+        print("================================\n")
 
-    print("--------------------------------")
-    print(f"Subtotal:       {total:.2f} Birr")
-    print(f"Discount:      -{discount:.2f} Birr")
-    print(f"After discount: {discounted_total:.2f} Birr")
-    print(f"Tax:             {tax:.2f} Birr")
-    print("--------------------------------")
-    print(f"Final amount:    {final_amount:.2f} Birr")
-    print("================================")
+        return {
+            "subtotal": total,
+            "discount": discount,
+            "tax": tax,
+            "final_amount": final_amount
+        }
+    except ValueError as e:
+        print(f"\n[Receipt Error]: {e}\n")
+        return None
 
-    return {
-        "subtotal": total,
-        "discount": discount,
-        "tax": tax,
-        "final_amount": final_amount
-    }
-
+# Valid Test Case
 items = [
      {"name": "Notebook", "price": 80, "quantity": 3},
      {"name": "Pen", "price": 15, "quantity": 5}
- ]
-
+]
 generate_receipt(items, 0.15)
