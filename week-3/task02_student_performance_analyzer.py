@@ -1,13 +1,12 @@
-def validate(students):
-    for student in students:
-        score = student["score"]
-        if score < 0 or score > 100:
-            raise ValueError(
-                f"Invalid score for {student['name']}: {score}"
-            )
+def validate_score(score):
+    # Validates that a score is between 0 and 100.
+    if not (0 <= score <= 100):
+        raise ValueError(f"Invalid score: {score}. Must be between 0 and 100.")
     return True
 
 def calculate_grade(score):
+    # Returns the letter grade for a given score based on criteria.
+    validate_score(score)
     if score >= 90:
         return "A"
     elif score >= 80:
@@ -20,77 +19,108 @@ def calculate_grade(score):
         return "F"
 
 def calculate_average(students):
-    if len(students) == 0:
-        raise ValueError("Student list cannot be empty.")
-    total = 0
+    if not students:
+        return 0
+    total_score = 0
+    count = 0
     for student in students:
-        total += student["score"]
-    average = total/len(students)
-    return average
+        total_score += student["score"]
+        count += 1
+    return total_score / count
 
-def largest_and_smallest(students):
-    if len(students) == 0:
-        raise ValueError("Student list cannot be empty.")
-    largest=students[0]["score"]
-    smallest=students[0]["score"]
+def find_highest_lowest(students):
+    if not students:
+        return None, None
+        
+    highest = students[0]["score"]
+    lowest = students[0]["score"]
+    
     for student in students:
-        if student["score"] > largest:
-            largest=student["score"]
-
-        if student["score"] < smallest:
-            smallest=student["score"]
-    return largest,smallest
-
-def passed_and_failed(students):
-    passed_count = 0
-    failed_count = 0
-
-    for student in students:
-        if student["score"] >= 50:
-            passed_count+=1
-        else:
-            failed_count += 1
-    return passed_count,failed_count
-
-def generate_report(students):
-    validate(students)
-
-    average = calculate_average(students)
-    largest,smallest = largest_and_smallest(students)
-    passed,failed = passed_and_failed(students)
-
-    above_average = []
-
-    print("======= STUDENT SCORE =======")
-    for student in students:
-        name = student["name"]
         score = student["score"]
-        grade = calculate_grade(score)
+        if score > highest:
+            highest = score
+        if score < lowest:
+            lowest = score
+            
+    return highest, lowest
 
-        print(f"{name}: {score} - Grade {grade}")
 
-        if score > average:
+def count_pass_fail(students, passing_score=50):
+    passed = 0
+    failed = 0
+    for student in students:
+        if student["score"] >= passing_score:
+            passed += 1
+        else:
+            failed += 1
+    return passed, failed
+
+
+def get_above_average_students(students, average):
+    above_average = []
+    for student in students:
+        if student["score"] > average:
             above_average.append(student)
-    print("--------------------------------")
-    print(f"Class average: {average:.2f}")
-    print(f"Highest score: {largest}")
-    print(f"Lowest score: {smallest}")
-    print(f"Passed students: {passed}")
-    print(f"Failed students: {failed}")
-    print("------------------------------------------")
-
-    print("Students above class average:")
-    for student in above_average:
-        print(f"{student['name']}: {student['score']}")
-
     return above_average
 
 
-students = [
-    {"name": "Jude", "score": 83},
-    {"name": "Reyan", "score": 45},
-    {"name": "Anna", "score": 93},
-    {"name": "Hayat", "score": 77}
+def generate_report(students):
+    try:
+        # Pre-validate all scores to ensure data integrity before reporting
+        for student in students:
+            validate_score(student["score"])
+            
+        # Run calculation functions
+        avg_score = calculate_average(students)
+        highest, lowest = find_highest_lowest(students)
+        passed, failed = count_pass_fail(students)
+        above_avg_list = get_above_average_students(students, avg_score)
+        
+        # 1. Print Student Grade Breakdown Table
+        print("\n" + "="*40)
+        print(f"{'STUDENT PERFORMANCE REPORT':^40}")
+        print("="*40)
+        print(f"{'Name':<15} {'Score':<10} {'Grade':<10}")
+        print("-"*40)
+        for student in students:
+            grade = calculate_grade(student["score"])
+            print(f"{student['name']:<15} {student['score']:<10} {grade:<10}")
+            
+        # 2. Print Summary Metrics
+        print("-"*40)
+        print(f"{'Class Average:':<25} {avg_score:>6.2f}")
+        print(f"{'Highest Score:':<25} {highest:>6}")
+        print(f"{'Lowest Score:':<25} {lowest:>6}")
+        print(f"{'Passed Students:':<25} {passed:>6}")
+        print(f"{'Failed Students:':<25} {failed:>6}")
+        print("="*40)
+        
+        # 3. Print Challenge Feature Results
+        print(f"{'STARS (ABOVE AVERAGE)':^40}")
+        print("-"*40)
+        for student in above_avg_list:
+            print(f" * {student['name']:<15} (Score: {student['score']})")
+        print("="*40 + "\n")
+        
+        return {
+            "average": avg_score,
+            "highest": highest,
+            "lowest": lowest,
+            "passed": passed,
+            "failed": failed,
+            "above_average": above_avg_list
+        }
+        
+    except ValueError as e:
+        print(f"\n[Data Error]: {e}\n")
+        return None
+
+
+students_data = [
+    {"name": "Sara", "score": 85},
+    {"name": "Ahmed", "score": 42},
+    {"name": "Musa", "score": 93},
+    {"name": "Hana", "score": 67}
 ]
 
-generate_report(students)
+generate_report(students_data)
