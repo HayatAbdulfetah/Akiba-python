@@ -44,7 +44,6 @@ def find_highest_lowest(students):
             
     return highest, lowest
 
-
 def count_pass_fail(students, passing_score=50):
     passed = 0
     failed = 0
@@ -62,7 +61,6 @@ def get_above_average_students(students, average):
         if student["score"] > average:
             above_average.append(student)
     return above_average
-
 
 def generate_report(students):
     try:
