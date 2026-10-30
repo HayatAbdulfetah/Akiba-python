@@ -1,4 +1,3 @@
-
 def count_words(paragraph):
     words = paragraph.split()
     word_count = 0
