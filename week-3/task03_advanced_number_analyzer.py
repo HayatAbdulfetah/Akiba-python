@@ -49,6 +49,7 @@ def analyze_number(number):
         "divisors": divisors
     }
 
+# test yse the number 123
 result = analyze_number(123)
 
 print("======= NUMBER ANALYSIS =======")
