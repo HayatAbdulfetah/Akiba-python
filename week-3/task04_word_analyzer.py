@@ -30,10 +30,10 @@ def count_vowel_and_consonant(paragraph):
 
 def longest_word(paragraph):
     words=paragraph.split()
-    longest_word=words[0]
+    longest_word = words[0]
     for word in words:
-        if len(word)>len(longest_word):
-            longest_word=word
+        if len(word) > len(longest_word):
+            longest_word = word
 
     return longest_word
     
